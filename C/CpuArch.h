@@ -1,8 +1,8 @@
 /* CpuArch.h -- CPU specific code
 2018-02-18 : Igor Pavlov : Public domain */
 
-#ifndef __CPU_ARCH_H
-#define __CPU_ARCH_H
+#ifndef CPU_ARCH_H
+#define CPU_ARCH_H
 
 #include "7zTypes.h"
 

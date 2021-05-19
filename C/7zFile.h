@@ -1,8 +1,8 @@
 /* 7zFile.h -- File IO
 2017-04-03 : Igor Pavlov : Public domain */
 
-#ifndef __7Z_FILE_H
-#define __7Z_FILE_H
+#ifndef _7Z_FILE_H  // NOLINT
+#define _7Z_FILE_H  // NOLINT
 
 #ifdef _WIN32
 #define USE_WINDOWS_FILE

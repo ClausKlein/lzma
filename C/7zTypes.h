@@ -1,8 +1,8 @@
 /* 7zTypes.h -- Basic types
 2018-08-04 : Igor Pavlov : Public domain */
 
-#ifndef __7Z_TYPES_H
-#define __7Z_TYPES_H
+#ifndef _7Z_TYPES_H // NOLINT
+#define _7Z_TYPES_H // NOLINT
 
 #ifdef _WIN32
 /* #include <windows.h> */

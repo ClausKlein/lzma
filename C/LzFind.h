@@ -1,8 +1,8 @@
 /* LzFind.h -- Match finder for LZ algorithms
 2017-06-10 : Igor Pavlov : Public domain */
 
-#ifndef __LZ_FIND_H
-#define __LZ_FIND_H
+#ifndef LZ_FIND_H
+#define LZ_FIND_H
 
 #include "7zTypes.h"
 

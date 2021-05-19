@@ -1,14 +1,14 @@
 /* 7zCrc.h -- CRC32 calculation
 2013-01-18 : Igor Pavlov : Public domain */
 
-#ifndef __7Z_CRC_H
-#define __7Z_CRC_H
+#ifndef _7Z_CRC_H   // NOLINT
+#define _7Z_CRC_H   // NOLINT
 
 #include "7zTypes.h"
 
 EXTERN_C_BEGIN
 
-extern UInt32 g_CrcTable[];
+extern UInt32 g_CrcTable[]; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 /* Call CrcGenerateTable one time before other CRC functions */
 void MY_FAST_CALL CrcGenerateTable(void);

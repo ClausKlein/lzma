@@ -1,8 +1,8 @@
 /* Compiler.h
 2017-04-03 : Igor Pavlov : Public domain */
 
-#ifndef __7Z_COMPILER_H
-#define __7Z_COMPILER_H
+#ifndef COMPILER_H
+#define COMPILER_H
 
 #ifdef _MSC_VER
 

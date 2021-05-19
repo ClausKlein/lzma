@@ -175,7 +175,7 @@ static int main2(int numArgs, const char *args[], char *rs)
   CFileSeqInStream inStream;
   CFileOutStream outStream;
   char c;
-  int res;
+  int res = SZ_ERROR_WRITE;
   int encodeMode;
   BoolInt useOutFile = False;
 
@@ -224,13 +224,20 @@ static int main2(int numArgs, const char *args[], char *rs)
     File_GetLength(&inStream.file, &fileSize);
     res = Encode(&outStream.vt, &inStream.vt, fileSize, rs);
   }
+  else if (useOutFile)
+  {
+    res = Decode(&outStream.vt, &inStream.vt);
+  }
   else
   {
-    res = Decode(&outStream.vt, useOutFile ? &inStream.vt : NULL);
+    // Exception: SegFault
+    // res = Decode(&outStream.vt, NULL); // TODO: should be stdout! CK
   }
 
   if (useOutFile)
+  {
     File_Close(&outStream.file);
+  }
   File_Close(&inStream.file);
 
   if (res != SZ_OK)

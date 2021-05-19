@@ -38,7 +38,9 @@ if(COMPILER_WARNINGS_ARE_ERRORS)
     add_compile_options(/W4 /WX)
   else()
     # lots of warnings and all warnings as errors
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror
+        -Wno-overlength-strings
+    )
   endif()
 endif()
 
@@ -49,30 +51,52 @@ endif()
 # initialize the RUNTIME_OUTPUT_DIRECTORY property on all the targets.
 #
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+
+add_library(
+  lzma_s STATIC
+  # TBD added for test! CK
+  7zCrcOpt.c
+  7zCrc.c
+  7zCrc.h
+  CpuArch.c
+  ####################
+  7zFile.c
+  7zFile.h
+  7zStream.c
+  7zTypes.h
+  7zVersion.h
+  Alloc.c
+  Alloc.h
+  Compiler.h
+  CpuArch.h
+  LzFind.c
+  LzFind.h
+  LzHash.h
+  LzmaDec.c
+  LzmaDec.h
+  LzmaEnc.c
+  LzmaEnc.h
+  Precomp.h
+)
+target_compile_definitions(lzma_s PUBLIC _7ZIP_ST)
+target_include_directories(lzma_s PUBLIC ${PROJECT_SOURCE_DIR})
+#XXX target_link_libraries(lzma_s Threads::Threads)
 
 # use the lib to build bin
-add_executable( lzma
-    7zFile.c
-    7zFile.h
-    7zStream.c
-    7zTypes.h
-    7zVersion.h
-    Alloc.c
-    Alloc.h
-    Compiler.h
-    CpuArch.h
-    LzFind.c
-    LzFind.h
-    LzHash.h
-    LzmaDec.c
-    LzmaDec.h
-    LzmaEnc.c
-    LzmaEnc.h
-    Precomp.h
-    Util/Lzma/LzmaUtil.c
-)
-target_compile_definitions(lzma PUBLIC _7ZIP_ST)
-#XXX target_link_libraries(lzma Threads::Threads)
+add_executable(lzma Util/Lzma/LzmaUtil.c)
+
+target_link_libraries(lzma lzma_s)
+
+# test support
+enable_testing()
+add_subdirectory(test)
+
+add_test(NAME test_encode COMMAND lzma e ${PROJECT_SOURCE_DIR}/../README.rst README.lzma)
+add_test(NAME test_decode COMMAND lzma d README.lzma README.rst)
+add_test(NAME test_check COMMAND diff ${PROJECT_SOURCE_DIR}/../README.rst README.rst)
+#FIXME add_test(NAME test_stdout COMMAND lzma d README.lzma)
+add_test(NAME test_help COMMAND lzma )
 
 # install the bin
 install(TARGETS lzma DESTINATION bin)

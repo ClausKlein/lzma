@@ -1,8 +1,8 @@
 /* Alloc.h -- Memory allocation functions
 2018-02-19 : Igor Pavlov : Public domain */
 
-#ifndef __COMMON_ALLOC_H
-#define __COMMON_ALLOC_H
+#ifndef ALLOC_H
+#define ALLOC_H
 
 #include "7zTypes.h"
 
