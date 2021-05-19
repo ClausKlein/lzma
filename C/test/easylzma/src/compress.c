@@ -66,9 +66,9 @@ elzma_compress_free(elzma_compress_handle * hand)
                             (ISzAlloc *) &((*hand)->allocStruct),
                             (ISzAlloc *) &((*hand)->allocStruct));
         }
-        
+
     }
-    *hand = NULL;
+    *hand = NULL;   // NOLINT(clang-analyzer-core.NullDereference)
 }
 
 int

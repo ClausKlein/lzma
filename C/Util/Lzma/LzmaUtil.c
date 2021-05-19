@@ -80,22 +80,22 @@ static SRes Decode2(CLzmaDec *state, ISeqOutStream *outStream, ISeqInStream *inS
         outProcessed = (SizeT)unpackSize;
         finishMode = LZMA_FINISH_END;
       }
-      
+
       res = LzmaDec_DecodeToBuf(state, outBuf + outPos, &outProcessed,
         inBuf + inPos, &inProcessed, finishMode, &status);
       inPos += inProcessed;
       outPos += outProcessed;
       unpackSize -= outProcessed;
-      
+
       if (outStream)
         if (outStream->Write(outStream, outBuf, outPos) != outPos)
           return SZ_ERROR_WRITE;
-        
+
       outPos = 0;
-      
+
       if (res != SZ_OK || (thereIsSize && unpackSize == 0))
         return res;
-      
+
       if (inProcessed == 0 && outProcessed == 0)
       {
         if (thereIsSize || status != LZMA_STATUS_FINISHED_WITH_MARK)
@@ -230,7 +230,7 @@ static int main2(int numArgs, const char *args[], char *rs)
   }
   else
   {
-    // Exception: SegFault
+    // FIXME: Exception: SegFault
     // res = Decode(&outStream.vt, NULL); // TODO: should be stdout! CK
   }
 

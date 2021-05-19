@@ -17,7 +17,7 @@ readability-*,\
 -*magic-numbers,\
 -*avoid-c-arrays,\
 "
-WarningsAsErrors: ''
+WarningsAsErrors: 'clang-analyzer-*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file

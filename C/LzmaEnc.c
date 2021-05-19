@@ -2094,7 +2094,7 @@ MY_NO_INLINE static void FillAlignPrices(CLzmaEnc *p)
     UInt32 prob;
     bit = sym & 1; sym >>= 1; price += GET_PRICEa(probs[m], bit); m = (m << 1) + bit;
     bit = sym & 1; sym >>= 1; price += GET_PRICEa(probs[m], bit); m = (m << 1) + bit;
-    bit = sym & 1; sym >>= 1; price += GET_PRICEa(probs[m], bit); m = (m << 1) + bit;
+    bit = sym & 1; sym >>= 1; price += GET_PRICEa(probs[m], bit); m = (m << 1) + bit; // NOLINT(clang-analyzer-deadcode.DeadStores)
     prob = probs[m];
     p->alignPrices[i    ] = price + GET_PRICEa_0(prob);
     p->alignPrices[i + 8] = price + GET_PRICEa_1(prob);
