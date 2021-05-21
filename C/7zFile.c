@@ -39,6 +39,12 @@ void File_Construct(CSzFile *p)
 #if !defined(UNDER_CE) || !defined(USE_WINDOWS_FILE)
 static WRes File_Open(CSzFile *p, const char *name, int writeMode)
 {
+  if (!name && writeMode)
+  {
+    p->file = stdout;
+    return 0;
+  }
+
   #ifdef USE_WINDOWS_FILE
   p->handle = CreateFileA(name,
       writeMode ? GENERIC_WRITE : GENERIC_READ,
@@ -226,7 +232,7 @@ WRes File_GetLength(CSzFile *p, UInt64 *length)
   
   #else
   
-  long pos = ftell(p->file);
+  off_t pos = ftell(p->file);
   int res = fseek(p->file, 0, SEEK_END);
   *length = ftell(p->file);
   fseek(p->file, pos, SEEK_SET);

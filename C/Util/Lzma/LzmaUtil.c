@@ -20,32 +20,32 @@ static const char * const kCantWriteMessage = "Can not write output file";
 static const char * const kCantAllocateMessage = "Can not allocate memory";
 static const char * const kDataErrorMessage = "Data error";
 
-static void PrintHelp(char *buffer)
+static void PrintHelp(char *buffer, size_t len)
 {
-  strcat(buffer,
+  strncat(buffer,
     "\nLZMA-C " MY_VERSION_CPU " : " MY_COPYRIGHT_DATE "\n\n"
-    "Usage:  lzma <e|d> inputFile outputFile\n"
+    "Usage:  lzma <e|d> inputFile [outputFile]\n"
     "  e: encode file\n"
-    "  d: decode file\n");
+    "  d: decode file\n", len);
 }
 
-static int PrintError(char *buffer, const char *message)
+static int PrintError(char *buffer, size_t len, const char *message)
 {
-  strcat(buffer, "\nError: ");
-  strcat(buffer, message);
-  strcat(buffer, "\n");
+  strncat(buffer, "\nError: ", len);
+  strncat(buffer, message, len);
+  strncat(buffer, "\n", len);
   return 1;
 }
 
-static int PrintErrorNumber(char *buffer, SRes val)
+static int PrintErrorNumber(char *buffer, size_t len, SRes val)
 {
-  sprintf(buffer + strlen(buffer), "\nError code: %x\n", (unsigned)val);
+  snprintf(buffer + strlen(buffer), len, "\nError code: %x\n", (unsigned)val);
   return 1;
 }
 
-static int PrintUserError(char *buffer)
+static int PrintUserError(char *buffer, size_t len)
 {
-  return PrintError(buffer, "Incorrect command");
+  return PrintError(buffer, len, "Incorrect command");
 }
 
 
@@ -56,9 +56,10 @@ static int PrintUserError(char *buffer)
 static SRes Decode2(CLzmaDec *state, ISeqOutStream *outStream, ISeqInStream *inStream,
     UInt64 unpackSize)
 {
-  int thereIsSize = (unpackSize != (UInt64)(Int64)-1);
-  Byte inBuf[IN_BUF_SIZE];
-  Byte outBuf[OUT_BUF_SIZE];
+  const int thereIsSize = (unpackSize != (UInt64)(Int64)-1);
+  static Byte inBuf[IN_BUF_SIZE];
+  static Byte outBuf[OUT_BUF_SIZE];
+
   size_t inPos = 0, inSize = 0, outPos = 0;
   LzmaDec_Init(state);
   for (;;)
@@ -170,7 +171,7 @@ static SRes Encode(ISeqOutStream *outStream, ISeqInStream *inStream, UInt64 file
 }
 
 
-static int main2(int numArgs, const char *args[], char *rs)
+static int main2(int numArgs, const char *args[], char *rs, size_t len)
 {
   CFileSeqInStream inStream;
   CFileOutStream outStream;
@@ -187,36 +188,39 @@ static int main2(int numArgs, const char *args[], char *rs)
 
   if (numArgs == 1)
   {
-    PrintHelp(rs);
+    PrintHelp(rs, len);
     return 0;
   }
 
   if (numArgs < 3 || numArgs > 4 || strlen(args[1]) != 1)
-    return PrintUserError(rs);
+    return PrintUserError(rs, len);
 
   c = args[1][0];
   encodeMode = (c == 'e' || c == 'E');
   if (!encodeMode && c != 'd' && c != 'D')
-    return PrintUserError(rs);
+    return PrintUserError(rs, len);
 
   {
     size_t t4 = sizeof(UInt32);
     size_t t8 = sizeof(UInt64);
     if (t4 != 4 || t8 != 8)
-      return PrintError(rs, "Incorrect UInt32 or UInt64");
+      return PrintError(rs, len, "Incorrect UInt32 or UInt64");
   }
 
   if (InFile_Open(&inStream.file, args[2]) != 0)
-    return PrintError(rs, "Can not open input file");
+    return PrintError(rs, len, "Can not open input file");
 
   if (numArgs > 3)
   {
     useOutFile = True;
     if (OutFile_Open(&outStream.file, args[3]) != 0)
-      return PrintError(rs, "Can not open output file");
+      return PrintError(rs, len, "Can not open output file");
   }
   else if (encodeMode)
-    PrintUserError(rs);
+  {
+    (void) PrintUserError(rs, len);
+    return 0;
+  }
 
   if (encodeMode)
   {
@@ -228,10 +232,10 @@ static int main2(int numArgs, const char *args[], char *rs)
   {
     res = Decode(&outStream.vt, &inStream.vt);
   }
-  else
+  else // NOTE: stdout used! CK
   {
-    // FIXME: Exception: SegFault
-    // res = Decode(&outStream.vt, NULL); // TODO: should be stdout! CK
+    (void) OutFile_Open(&outStream.file, NULL);
+    res = Decode(&outStream.vt, &inStream.vt);
   }
 
   if (useOutFile)
@@ -243,14 +247,14 @@ static int main2(int numArgs, const char *args[], char *rs)
   if (res != SZ_OK)
   {
     if (res == SZ_ERROR_MEM)
-      return PrintError(rs, kCantAllocateMessage);
+      return PrintError(rs, len, kCantAllocateMessage);
     else if (res == SZ_ERROR_DATA)
-      return PrintError(rs, kDataErrorMessage);
+      return PrintError(rs, len, kDataErrorMessage);
     else if (res == SZ_ERROR_WRITE)
-      return PrintError(rs, kCantWriteMessage);
+      return PrintError(rs, len, kCantWriteMessage);
     else if (res == SZ_ERROR_READ)
-      return PrintError(rs, kCantReadMessage);
-    return PrintErrorNumber(rs, res);
+      return PrintError(rs, len, kCantReadMessage);
+    return PrintErrorNumber(rs, len, res);
   }
   return 0;
 }
@@ -259,7 +263,7 @@ static int main2(int numArgs, const char *args[], char *rs)
 int MY_CDECL main(int numArgs, const char *args[])
 {
   char rs[800] = { 0 };
-  int res = main2(numArgs, args, rs);
+  int res = main2(numArgs, args, rs, sizeof(rs));
   fputs(rs, stdout);
   return res;
 }

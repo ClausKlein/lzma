@@ -1,8 +1,9 @@
 PROG:= lzma
 CXX:= g++
-LIB:=
-RM:= rm -f
-CFLAGS:= -c -O2 -Wall -Wextra -D_7ZIP_ST -MMD -MP -std=c++17 -x c++
+LIB?=
+RM?= rm -f
+CFLAGS:= -c -O2 -Wall -Wextra -Wpedantic -D_7ZIP_ST -MMD -MP -std=c++17 -x c++
+LDFLAGS?=
 
 OBJS:= \
   LzmaUtil.o \
@@ -20,25 +21,25 @@ $(PROG): $(OBJS)
 	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIB)
 
 LzmaUtil.o: LzmaUtil.c
-	$(CXX) $(CFLAGS) LzmaUtil.c
+	$(CXX) $(CFLAGS) $(CURDIR)/LzmaUtil.c
 
 Alloc.o: ../../Alloc.c
-	$(CXX) $(CFLAGS) ../../Alloc.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../Alloc.c
 
 LzFind.o: ../../LzFind.c
-	$(CXX) $(CFLAGS) ../../LzFind.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../LzFind.c
 
 LzmaDec.o: ../../LzmaDec.c
-	$(CXX) $(CFLAGS) ../../LzmaDec.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../LzmaDec.c
 
 LzmaEnc.o: ../../LzmaEnc.c
-	$(CXX) $(CFLAGS) ../../LzmaEnc.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../LzmaEnc.c
 
 7zFile.o: ../../7zFile.c
-	$(CXX) $(CFLAGS) ../../7zFile.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../7zFile.c
 
 7zStream.o: ../../7zStream.c
-	$(CXX) $(CFLAGS) ../../7zStream.c
+	$(CXX) $(CFLAGS) $(CURDIR)/../../7zStream.c
 
 clean:
 	-$(RM) $(PROG) $(OBJS) *.d

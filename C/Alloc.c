@@ -7,7 +7,10 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
+
 #include <stdlib.h>
 
 #include "Alloc.h"
@@ -283,7 +286,7 @@ const ISzAlloc g_BigAlloc = { SzBigAlloc, SzBigFree };
 #define MY_ALIGN_PTR_UP_PLUS(p, align) MY_ALIGN_PTR_DOWN(((char *)(p) + (align) + ADJUST_ALLOC_SIZE), align)
 
 
-#if (_POSIX_C_SOURCE >= 200112L) && !defined(_WIN32)
+#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L) || defined(__APPLE__)
   #define USE_posix_memalign
 #endif
 
@@ -321,8 +324,8 @@ static int posix_memalign(void **ptr, size_t align, size_t size)
 
 static void *SzAlignedAlloc(ISzAllocPtr pp, size_t size)
 {
-  #ifndef USE_posix_memalign
-  
+#ifndef USE_posix_memalign
+
   void *p;
   void *pAligned;
   size_t newSize;
@@ -336,9 +339,9 @@ static void *SzAlignedAlloc(ISzAllocPtr pp, size_t size)
     return NULL;
 
   p = MyAlloc(newSize);
-  
   if (!p)
     return NULL;
+
   pAligned = MY_ALIGN_PTR_UP_PLUS(p, ALLOC_ALIGN_SIZE);
 
   Print(" size="); PrintHex(size, 8);
@@ -351,10 +354,11 @@ static void *SzAlignedAlloc(ISzAllocPtr pp, size_t size)
 
   return pAligned;
 
-  #else
+#else
 
   void *p;
   UNUSED_VAR(pp);
+
   if (posix_memalign(&p, ALLOC_ALIGN_SIZE, size))
     return NULL;
 
@@ -363,26 +367,27 @@ static void *SzAlignedAlloc(ISzAllocPtr pp, size_t size)
 
   return p;
 
-  #endif
+#endif
 }
 
 
 static void SzAlignedFree(ISzAllocPtr pp, void *address)
 {
   UNUSED_VAR(pp);
-  #ifndef USE_posix_memalign
+
+#ifndef USE_posix_memalign
   if (address)
     MyFree(((void **)address)[-1]);
-  #else
+#else
   free(address);
-  #endif
+#endif
 }
 
 
 const ISzAlloc g_AlignedAlloc = { SzAlignedAlloc, SzAlignedFree };
 
 
-
+#ifdef _WIN32
 #define MY_ALIGN_PTR_DOWN_1(p) MY_ALIGN_PTR_DOWN(p, sizeof(void *))
 
 /* we align ptr to support cases where CAlignOffsetAlloc::offset is not multiply of sizeof(void *) */
@@ -453,3 +458,4 @@ void AlignOffsetAlloc_CreateVTable(CAlignOffsetAlloc *p)
   p->vt.Alloc = AlignOffsetAlloc_Alloc;
   p->vt.Free = AlignOffsetAlloc_Free;
 }
+#endif

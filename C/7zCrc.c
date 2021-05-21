@@ -26,11 +26,11 @@
 
 typedef UInt32 (MY_FAST_CALL *CRC_FUNC)(UInt32 v, const void *data, size_t size, const UInt32 *table);
 
-CRC_FUNC g_CrcUpdateT4;
-CRC_FUNC g_CrcUpdateT8;
-CRC_FUNC g_CrcUpdate;
+CRC_FUNC g_CrcUpdateT4; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+CRC_FUNC g_CrcUpdateT8; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+CRC_FUNC g_CrcUpdate; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-UInt32 g_CrcTable[256 * CRC_NUM_TABLES];
+UInt32 g_CrcTable[256 * CRC_NUM_TABLES]; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 UInt32 MY_FAST_CALL CrcUpdate(UInt32 v, const void *data, size_t size)
 {

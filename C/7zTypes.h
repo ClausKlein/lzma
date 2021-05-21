@@ -4,10 +4,7 @@
 #ifndef _7Z_TYPES_H // NOLINT
 #define _7Z_TYPES_H // NOLINT
 
-#ifdef _WIN32
-/* #include <windows.h> */
-#endif
-
+#include <stdint.h>
 #include <stddef.h>
 
 #ifndef EXTERN_C_BEGIN
@@ -63,16 +60,16 @@ typedef int WRes;
 #define RINOK(x) { int __result__ = (x); if (__result__ != 0) return __result__; }
 #endif
 
-typedef unsigned char Byte;
-typedef short Int16;
-typedef unsigned short UInt16;
+typedef uint8_t Byte;
+typedef int16_t Int16;
+typedef uint16_t UInt16;
 
 #ifdef _LZMA_UINT32_IS_ULONG
 typedef long Int32;
 typedef unsigned long UInt32;
 #else
-typedef int Int32;
-typedef unsigned int UInt32;
+typedef int32_t Int32;
+typedef uint32_t UInt32;
 #endif
 
 #ifdef _SZ_NO_INT_64
@@ -103,7 +100,7 @@ typedef UInt32 SizeT;
 typedef size_t SizeT;
 #endif
 
-typedef int BoolInt;
+typedef unsigned int BoolInt;
 /* typedef BoolInt Bool; */
 #define True 1
 #define False 0

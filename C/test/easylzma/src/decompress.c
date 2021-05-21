@@ -67,7 +67,7 @@ elzma_decompress_run(elzma_decompress_handle hand,
     unsigned long long int totalRead = 0; /* total amount read from stream */
     unsigned int crc32 = CRC_INIT_VAL; /* running crc32 (lzip case) */     
     CLzmaDec dec;
-    unsigned int errorCode = ELZMA_E_OK;
+    int errorCode = ELZMA_E_OK;
     struct elzma_format_handler formatHandler;
     struct elzma_file_header h;
     struct elzma_file_footer f;

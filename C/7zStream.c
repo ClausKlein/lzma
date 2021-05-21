@@ -37,7 +37,7 @@ SRes SeqInStream_ReadByte(const ISeqInStream *stream, Byte *buf)
 
 SRes LookInStream_SeekTo(const ILookInStream *stream, UInt64 offset)
 {
-  Int64 t = offset;
+  Int64 t = offset; // NOLINT(cppcoreguidelines-narrowing-conversions)
   return ILookInStream_Seek(stream, &t, SZ_SEEK_SET);
 }
 
